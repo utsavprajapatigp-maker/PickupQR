@@ -1,147 +1,184 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Counter Pass</title>
-<meta name="theme-color" content="#0F5132"><link rel="manifest" href="manifest.json">
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;800&display=swap" rel="stylesheet">
-<script src="https://cdn.tailwindcss.com/3.4.17"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.263.1/lucide.min.js"></script>
-<style type="text/tailwindcss">
-body{font-family:'Bricolage Grotesque',system-ui,sans-serif;@apply bg-slate-50 text-slate-900}
-.btn{@apply px-4 py-2.5 rounded-lg font-semibold bg-[#0F5132] text-white active:scale-95 disabled:opacity-40}
-.btn2{@apply px-3 py-2 rounded-lg font-semibold bg-white border border-slate-300 disabled:opacity-40}
-.in{@apply w-full border border-slate-300 rounded-lg px-3 py-2.5 bg-white}
-.card{@apply bg-white rounded-xl border border-slate-200 p-3}
-@media print{#app{display:none!important}#poster{display:block!important}}
-</style></head><body><div id="app"></div><div id="poster" class="hidden"></div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>PickupQR – Order ahead, show the code, collect</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;800&display=swap">
+<style>
+:root{--bg:#eef1f6;--card:#fff;--tx:#14213d;--mu:#5f6b85;--bd:#dbe1ec;--ac:#1e2a78;--act:#fff;--hi:#f5a524;--ok:#15803d;--bad:#b91c1c;--chip:#e3e8f2;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1424;--card:#172038;--tx:#eef1f9;--mu:#98a4c2;--bd:#2a3556;--ac:#f5a524;--act:#1a1203;--ok:#4ade80;--bad:#f87171;--chip:#222d4d;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0e1424;--card:#172038;--tx:#eef1f9;--mu:#98a4c2;--bd:#2a3556;--ac:#f5a524;--act:#1a1203;--ok:#4ade80;--bad:#f87171;--chip:#222d4d;color-scheme:dark}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.45 "Bricolage Grotesque",system-ui,-apple-system,"Segoe UI",sans-serif}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--card);z-index:10}
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:9;background:var(--card);border-bottom:1px solid var(--bd);padding:10px 14px;display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.brand{font-weight:800;font-size:20px;letter-spacing:-.03em}
+nav{display:flex;gap:4px;background:var(--chip);border-radius:12px;padding:3px}
+nav button{border:0;background:none;color:var(--mu);font:inherit;font-weight:600;font-size:14px;padding:6px 12px;border-radius:9px;cursor:pointer}
+nav .on{background:var(--ac);color:var(--act)}
+main{max-width:560px;margin:0 auto;padding:14px 14px 110px}
+h2{font-size:26px;letter-spacing:-.03em;margin:6px 0 12px}h3{margin:18px 0 8px}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:12px;margin:0 0 10px;color:inherit;font:inherit;text-align:left;width:100%}
+.pr{display:flex;flex-direction:column;gap:3px;margin:0}.pr.off{opacity:.5}
+.em{font-size:36px;line-height:1.1}
+.btn{background:var(--ac);color:var(--act);border:0;border-radius:12px;padding:13px 16px;font:inherit;font-weight:800;width:100%;cursor:pointer}
+.btn.sm{padding:8px 12px;width:auto;font-size:14px}.btn.ghost{background:transparent;color:var(--ac);border:1.5px solid var(--ac)}
+.btn:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--hi);outline-offset:2px}
+.qty{display:flex;align-items:center;justify-content:space-between;margin-top:4px}
+.qty button{width:36px;height:36px;border-radius:10px;border:1px solid var(--bd);background:var(--chip);color:var(--tx);font-size:20px;cursor:pointer}
+.chips{display:flex;gap:8px;overflow-x:auto;margin-bottom:12px}
+.chip{border:1px solid var(--bd);background:var(--card);color:var(--tx);border-radius:99px;padding:7px 14px;font:inherit;font-size:14px;cursor:pointer;white-space:nowrap}
+.chip.on{background:var(--ac);color:var(--act);border-color:var(--ac)}
+.bar{position:fixed;left:0;right:0;bottom:0;padding:10px 14px calc(10px + env(safe-area-inset-bottom,0px));background:var(--bg);border-top:1px solid var(--bd);z-index:8}
+.bar .btn{max-width:532px;display:block;margin:0 auto}
+input,select{width:100%;padding:11px;border:1px solid var(--bd);border-radius:10px;background:var(--bg);color:var(--tx);font:inherit}
+.f label{display:grid;gap:4px;font-size:14px;margin-bottom:10px;color:var(--mu)}
+.msg{padding:10px 12px;border-radius:10px;margin:8px 0;font-weight:600}.msg:empty{display:none}
+.ok{background:color-mix(in srgb,var(--ok) 16%,transparent);color:var(--ok)}
+.bad{background:color-mix(in srgb,var(--bad) 16%,transparent);color:var(--bad)}
+.big{font-size:20px;text-align:center;padding:16px}
+.ticket{background:var(--card);border:1px solid var(--bd);border-radius:18px;text-align:center;margin-bottom:12px;overflow:hidden}
+.ticket .top{background:var(--hi);color:#1a1203;padding:12px}
+.no{font-size:38px;font-weight:800;letter-spacing:-.03em;line-height:1}
+.ticket .mid{padding:6px 16px 14px;border-top:2px dashed var(--bd);position:relative}
+.qr{background:#fff;padding:10px;border-radius:12px;width:min(250px,80%);margin:12px auto 6px}.qr svg{width:100%;height:auto;display:block}
+.steps{display:flex;gap:4px;margin:10px 0 2px;flex-wrap:wrap;justify-content:center}
+.steps span{font-size:12px;padding:4px 9px;border-radius:99px;background:var(--chip);color:var(--mu)}.steps .on{background:var(--ac);color:var(--act)}
+.row{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:3px 0}
+.row2{display:flex;gap:8px;align-items:center;margin-top:8px}
+.tot{border-top:1px dashed var(--bd);margin-top:6px;padding-top:8px;font-size:18px}
+.pill{background:var(--chip);border-radius:99px;padding:3px 10px;font-size:12px;font-weight:600;white-space:nowrap}
+.mu{color:var(--mu)}.sm{font-size:13px}.c{text-align:center}
+.link{background:none;border:0;color:var(--ac);font:inherit;font-weight:600;padding:0 0 8px;cursor:pointer}
+video{width:100%;border-radius:12px;margin-bottom:8px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.stats .card{display:grid;text-align:center;margin:0;font-size:22px}
+.pi{width:84px;padding:7px}
+</style>
+</head>
+<body>
+<header><span class="brand">PickupQR</span>
+<nav><button data-v="cust" onclick="go('cust')">Customer</button><button data-v="staff" onclick="go('staff')">Staff</button><button data-v="admin" onclick="go('admin')">Admin</button></nav></header>
+<main id="app"></main>
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
 <script>
-/* ===== FIREBASE (optional multi-device sync) =====
-   Paste your web-app config below, e.g. {apiKey:"..",authDomain:"..",projectId:"..",appId:".."}
-   and enable Firestore. Leave null to use localStorage (single device / same browser).
-   NOTE: lock down Firestore rules in production; client-only checks cannot stop a determined attacker. */
-const FIREBASE_CONFIG=null;
+const $=s=>document.querySelector(s),K='pq_v1';
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const seed={n:1000,p:[
+{id:1,c:'Food',n:'Veg sandwich',pr:80,e:'🥪',on:1},{id:2,c:'Food',n:'Masala dosa',pr:120,e:'🥞',on:1},{id:3,c:'Food',n:'Paneer roll',pr:110,e:'🌯',on:1},
+{id:4,c:'Drinks',n:'Masala chai',pr:25,e:'☕',on:1},{id:5,c:'Drinks',n:'Cold coffee',pr:90,e:'🧋',on:1},{id:6,c:'Drinks',n:'Fresh lime',pr:40,e:'🍋',on:1},
+{id:7,c:'Grocery',n:'Milk 1 L',pr:56,e:'🥛',on:1},{id:8,c:'Grocery',n:'Bread loaf',pr:45,e:'🍞',on:1},{id:9,c:'Grocery',n:'Eggs (6)',pr:48,e:'🥚',on:1}],o:[]};
+let S=JSON.parse(JSON.stringify(seed)),view='cust',page='menu',cat='All',cart={},cur=null,staffIn=false,stream=null;
+const load=()=>{try{const s=JSON.parse(localStorage.getItem(K));if(s)S=s}catch(e){}};
+const save=()=>{try{localStorage.setItem(K,JSON.stringify(S))}catch(e){}};
+const mine=()=>{try{return JSON.parse(localStorage.getItem('pq_mine'))||[]}catch(e){return[]}};
+const addMine=t=>{try{localStorage.setItem('pq_mine',JSON.stringify([t,...mine()]))}catch(e){}};
+const P=id=>S.p.find(p=>p.id===id),F=t=>S.o.find(o=>o.t===t);
+const cnt=()=>Object.values(cart).reduce((a,b)=>a+b,0),sub=()=>Object.entries(cart).reduce((a,[i,q])=>a+P(+i).pr*q,0);
+const er=m=>{const e=$('#er');if(e)e.textContent=m};
+const open=o=>!['Picked Up','Cancelled'].includes(o.st);
+function add(i,d){const q=(cart[i]||0)+d;q>0?cart[i]=q:delete cart[i];R()}
+function go(v){view=v;stop();R()}
+function R(){load();document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.v===view));
+$('#app').innerHTML=view==='cust'?cust():!staffIn?login():view==='staff'?staff():admin()}
 
-const $=s=>document.querySelector(s),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const enc=new TextEncoder(),hex=b=>[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('');
-const sha=async s=>hex(await crypto.subtle.digest('SHA-256',enc.encode(s)));
-const hmac=async(k,m)=>hex(await crypto.subtle.sign('HMAC',await crypto.subtle.importKey('raw',enc.encode(k),{name:'HMAC',hash:'SHA-256'},false,['sign']),enc.encode(m)));
-const rnd=n=>hex(crypto.getRandomValues(new Uint8Array(n)));
-const strong=p=>/^\d{6}$/.test(p)&&!/^(\d)\1{5}$/.test(p)&&!/^(\d\d)\1\1$/.test(p)&&!/^(\d{3})\1$/.test(p)&&!'01234567890'.includes(p)&&!'09876543210'.includes(p);
+/* CUSTOMER (guest, no account) */
+function cust(){
+ if(page==='order')return orderView();
+ if(page==='cart'&&cnt())return cartView();
+ page='menu';
+ const cats=['All',...new Set(S.p.map(p=>p.c))],n=cnt();
+ return `<h2>What would you like to pick up?</h2>
+ <div class="chips">${cats.map(c=>`<button class="chip ${c===cat?'on':''}" onclick="cat='${c}';R()">${c}</button>`).join('')}</div>
+ <div class="grid">${S.p.filter(p=>cat==='All'||p.c===cat).map(p=>{const q=cart[p.id]||0;
+ return `<div class="card pr ${p.on?'':'off'}"><div class="em">${p.e}</div><b>${p.n}</b><span class="mu">₹${p.pr}${p.on?'':' · Sold out'}</span>${p.on?(q?`<div class="qty"><button aria-label="Remove one" onclick="add(${p.id},-1)">−</button><b>${q}</b><button aria-label="Add one" onclick="add(${p.id},1)">+</button></div>`:`<button class="btn sm" onclick="add(${p.id},1)">Add</button>`):''}</div>`}).join('')}</div>
+ ${myOrders()}
+ ${n?`<div class="bar"><button class="btn" onclick="page='cart';R()">View cart · ${n} item${n>1?'s':''} · ₹${sub()}</button></div>`:''}`}
+function myOrders(){const l=mine().map(F).filter(Boolean);if(!l.length)return'';
+ return `<h3>Your orders on this device</h3>${l.map(o=>`<button class="card row" onclick="cur='${o.t}';page='order';R()"><span><b>${o.no}</b> · ₹${o.total}</span><span class="pill">${o.st}</span></button>`).join('')}<p class="mu sm">Clearing your browser data removes this list.</p>`}
+function cartView(){const s=sub(),tx=Math.round(s*.05);
+ return `<button class="link" onclick="page='menu';R()">← Back to menu</button><h2>Your cart</h2>
+ <div class="card">${Object.entries(cart).map(([i,q])=>{const p=P(+i);return `<div class="row"><span>${p.e} ${p.n} × ${q}</span><b>₹${p.pr*q}</b></div>`}).join('')}
+ <div class="row mu"><span>Tax (5%)</span><span>₹${tx}</span></div><div class="row tot"><span>Total</span><b>₹${s+tx}</b></div></div>
+ <div class="card f"><label>Name, so staff can call it out<input id="nm" autocomplete="given-name"></label>
+ <label>Phone, optional, for “order ready” alerts<input id="ph" inputmode="tel"></label>
+ <label>Pickup time<select id="sl"><option>ASAP</option><option>In 15 min</option><option>In 30 min</option><option>In 1 hour</option></select></label>
+ <label>Payment<select id="py"><option value="store">Pay at store</option><option value="online">Pay online (demo)</option></select></label>
+ <p class="mu sm">No account needed. We keep your name and phone only to run this order.</p>
+ <div id="er" class="msg bad"></div><button class="btn" onclick="place()">Place order and get QR</button></div>`}
+function place(){load();
+ const name=$('#nm').value.trim(),ph=$('#ph').value.trim(),pay=$('#py').value,slot=$('#sl').value;
+ const items=Object.entries(cart).map(([i,q])=>({p:P(+i),q}));
+ const act=mine().map(F).filter(o=>o&&open(o)).length;
+ if(!name)return er('Enter your name so staff can find your order.');
+ if(act>=3)return er('You already have 3 active orders. Collect one before placing another.');
+ if(items.some(x=>!x.p.on))return er('An item just sold out. Go back to the menu and remove it.');
+ const s=items.reduce((a,x)=>a+x.p.pr*x.q,0),tx=Math.round(s*.05);
+ const t=Array.from(crypto.getRandomValues(new Uint8Array(16)),b=>b.toString(16).padStart(2,'0')).join('');
+ S.o.unshift({t,no:'#A-'+(++S.n),name,ph,pay,slot,paid:pay==='online',items:items.map(x=>({n:x.p.n,e:x.p.e,pr:x.p.pr,q:x.q})),total:s+tx,st:'Placed',ts:Date.now(),used:0});
+ save();addMine(t);cart={};cur=t;page='order';R()}
+function qr(t){if(typeof qrcode==='undefined')return`<code>${t}</code>`;const q=qrcode(0,'M');q.addData(t);q.make();return q.createSvgTag(5,2)}
+function orderView(){const o=F(cur);if(!o){page='menu';return cust()}
+ const st=['Placed','Accepted','Preparing','Ready','Picked Up'],i=st.indexOf(o.st);
+ const code=o.st==='Picked Up'?'<div class="msg ok big">Picked up ✓</div>':o.st==='Cancelled'?'<div class="msg bad big">Order cancelled</div>':
+ `${o.st==='Ready'?'<div class="msg ok">Your order is ready. Show this code at the counter.</div>':''}<div class="qr">${qr(o.t)}</div><p class="mu sm">Staff scan this code to hand over your order.</p>`;
+ return `<button class="link" onclick="page='menu';R()">← Back to menu</button>
+ <div class="ticket"><div class="top"><div class="no">${o.no}</div>${esc(o.name)} · ${o.slot}</div><div class="mid">${code}
+ <div class="steps">${st.map((x,j)=>`<span class="${o.st!=='Cancelled'&&j<=i?'on':''}">${x}</span>`).join('')}</div></div></div>
+ <div class="card">${o.items.map(x=>`<div class="row"><span>${x.e} ${x.n} × ${x.q}</span><b>₹${x.pr*x.q}</b></div>`).join('')}<div class="row tot"><span>${o.paid?'Paid':'Pay at counter'}</span><b>₹${o.total}</b></div></div>
+ ${['Placed','Accepted'].includes(o.st)?`<button class="btn ghost" onclick="cancel('${o.t}')">Cancel order</button>`:''}
+ <p class="mu sm c">Screenshot your code. Staff can also find your order by number or name.</p>`}
+function cancel(t){load();const o=F(t);if(o&&['Placed','Accepted'].includes(o.st)){o.st='Cancelled';save()}R()}
 
-/* ===== Data layer: Firestore if configured, else localStorage (+ cross-tab sync) ===== */
-const S={products:{},orders:{},settings:{},audit:{}},subs=[];let fb=null;
-const LS=c=>JSON.parse(localStorage.getItem('pos_'+c)||'{}'),changed=()=>subs.forEach(f=>f());
-async function initDB(){
- if(FIREBASE_CONFIG){try{const A=await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js'),F=await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js');
-  const db=F.getFirestore(A.initializeApp(FIREBASE_CONFIG));fb={F,db};
-  for(const c in S)F.onSnapshot(F.collection(db,c),sn=>{S[c]={};sn.forEach(d=>S[c][d.id]=d.data());changed()});return}catch(e){console.warn('Firebase failed; using localStorage',e)}}
- for(const c in S)S[c]=LS(c);addEventListener('storage',()=>{for(const c in S)S[c]=LS(c);changed()})}
-const persist=c=>localStorage.setItem('pos_'+c,JSON.stringify(S[c]));
-const put=(c,o)=>{S[c][o.id]=o;fb?fb.F.setDoc(fb.F.doc(fb.db,c,o.id),o):persist(c);changed()};
-const del=(c,id)=>{delete S[c][id];fb?fb.F.deleteDoc(fb.F.doc(fb.db,c,id)):persist(c);changed()};
-const cfg=()=>S.settings.main||{name:'Corner Mart & Grill',upi:'',hash:'',lock:15,salt:'',hkey:''};
-const seed=()=>{if(S.settings.main)return;put('settings',{id:'main',name:'Corner Mart & Grill',upi:'',salt:rnd(16),hkey:rnd(32),hash:'',lock:15});
- [['Masala Fries',89,'ff','🍟'],['Chicken Burger',149,'ff','🍔'],['Paneer Wrap',129,'ff','🌯'],['Cold Coffee',79,'ff','🥤'],['Basmati Rice 1kg',129,'sp','🍚'],['Atta 5kg',249,'sp','🌾'],['Butter 100g',58,'sp','🧈'],['Tea Powder 250g',120,'sp','🍵']].forEach(([n,p,c,e])=>put('products',{id:'p'+rnd(3),n,p,c,e,ok:1}))};
-async function log(ev){const l=Object.values(S.audit).sort((a,b)=>b.t-a.t)[0],e={id:Date.now()+rnd(2),t:Date.now(),ev,prev:l?.h||'0'};e.h=await sha(e.prev+e.t+ev);put('audit',e)} // hash-chained, append-only
+/* STAFF */
+function login(){return `<div class="card f"><h2>Staff sign-in</h2><p class="mu sm">Demo PIN: 1234</p><label>PIN<input id="pin" type="password" inputmode="numeric"></label><div id="er" class="msg bad"></div><button class="btn" onclick="signin()">Sign in</button></div>`}
+function signin(){if($('#pin').value==='1234'){staffIn=true;R()}else er('Wrong PIN. Try again.')}
+function staff(){return `<div class="card f"><h2>Scan pickup code</h2><video id="vid" playsinline muted hidden></video>
+ <button class="btn" onclick="cam()">Open camera scanner</button>
+ <div class="row2"><input id="lk" placeholder="Order number, name or phone" aria-label="Manual lookup"><button class="btn sm" onclick="look()">Find</button></div></div>
+ <div id="res"></div><h3>Live queue</h3><div id="q">${queue()}</div>`}
+async function cam(){const v=$('#vid');
+ try{stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}});v.srcObject=stream;v.hidden=false;await v.play();tick()}
+ catch(e){stop();$('#res').innerHTML='<div class="msg bad">Camera is not available here. Use the lookup box instead.</div>'}}
+function tick(){const v=$('#vid');if(!v||!stream)return;
+ if(v.readyState===4&&window.jsQR){const c=document.createElement('canvas');c.width=v.videoWidth;c.height=v.videoHeight;const x=c.getContext('2d');x.drawImage(v,0,0);
+ const r=jsQR(x.getImageData(0,0,c.width,c.height).data,c.width,c.height);if(r&&r.data){stop();load();show(F(r.data));return}}
+ requestAnimationFrame(tick)}
+function stop(){if(stream)stream.getTracks().forEach(t=>t.stop());stream=null;const v=$('#vid');if(v)v.hidden=true}
+function look(){load();const v=$('#lk').value.trim().toLowerCase();
+ show(v&&S.o.find(o=>o.no.toLowerCase()===v||o.no.toLowerCase()==='#a-'+v||o.name.toLowerCase().includes(v)||(o.ph&&o.ph.includes(v))))}
+function show(o){const r=$('#res');if(!o){r.innerHTML='<div class="msg bad big">✗ Invalid code</div>';return}
+ let m='';if(o.st==='Cancelled')m='✗ Order was cancelled';
+ else if(o.used)m='✗ Already picked up at '+new Date(o.used).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+ else if(Date.now()-o.ts>864e5)m='✗ Order expired';
+ r.innerHTML=`<div class="msg ${m?'bad':'ok'} big">${m||'✓ Valid order'}</div><div class="card"><b>${o.no} · ${esc(o.name)}</b> <span class="mu">${esc(o.ph||'')}</span>
+ ${o.items.map(x=>`<div class="row"><span>${x.e} ${x.n} × ${x.q}</span><b>₹${x.pr*x.q}</b></div>`).join('')}
+ <div class="row tot"><span>${o.paid?'Paid':'Collect at counter'}</span><b>₹${o.total}</b></div>
+ ${m?'':`<button class="btn" onclick="hand('${o.t}')">${o.paid?'':'Collect ₹'+o.total+' and '}confirm handover</button>`}</div>`}
+function hand(t){load();const o=F(t);
+ if(o&&!o.used&&o.st!=='Cancelled'){o.used=Date.now();o.st='Picked Up';o.paid=true;save();$('#res').innerHTML='<div class="msg ok big">✓ Handed over</div>'}
+ else show(o);$('#q').innerHTML=queue()}
+function queue(){load();const l=S.o.filter(open),nx={Placed:'Accept',Accepted:'Start preparing',Preparing:'Mark ready'};
+ if(!l.length)return'<p class="mu">No active orders. Place one from the Customer tab.</p>';
+ return l.map(o=>`<div class="card"><div class="row"><b>${o.no} · ${esc(o.name)}</b><span class="pill">${o.st}</span></div>
+ <div class="mu sm">${o.items.map(x=>x.q+'× '+x.n).join(', ')} · ₹${o.total} · ${o.paid?'Paid':'Pay at counter'} · ${o.slot}</div>
+ <div class="row2">${nx[o.st]?`<button class="btn sm" onclick="adv('${o.t}')">${nx[o.st]}</button>`:'<span class="mu sm">Waiting for the customer’s code</span>'}${o.st==='Placed'?`<button class="btn sm ghost" onclick="adv('${o.t}',1)">Reject</button>`:''}</div></div>`).join('')}
+function adv(t,rej){load();const o=F(t),f=['Placed','Accepted','Preparing','Ready'];if(o){o.st=rej?'Cancelled':f[f.indexOf(o.st)+1];save()}$('#q').innerHTML=queue()}
 
-/* ===== State ===== */
-let panel=new URLSearchParams(location.search).get('panel')=='admin'?'admin':'user',tab='all',q='',cart={},drawer='',co={name:'',arr:'Arriving now',pay:'counter'},taps=[];
-let un=false,at='orders',ent='',p1='',msg='',last=Date.now(),edit='',scanRes=null,scanMsg='',scn=null,busy=0,seen=new Set(),seenInit=false,wl=0;
-const dev=localStorage.pos_dev||(localStorage.pos_dev=rnd(8)),ST=['Order received','Preparing','Ready for pickup','Handed over'];
-const cartTotal=()=>Object.entries(cart).reduce((a,[id,n])=>a+(S.products[id]?.p||0)*n,0);
-const mine=()=>JSON.parse(localStorage.pos_mine||'[]').map(i=>S.orders[i]).filter(Boolean).sort((a,b)=>b.t-a.t);
-function toast(m){const t=document.createElement('div');t.textContent=m;t.className='fixed top-3 inset-x-3 z-50 mx-auto max-w-sm bg-slate-900 text-white rounded-lg p-3 text-center';document.body.append(t);setTimeout(()=>t.remove(),2800)}
-function chime(){try{const a=new(window.AudioContext||webkitAudioContext)(),t=a.currentTime;[880,1175].forEach((f,i)=>{const o=a.createOscillator(),g=a.createGain();o.frequency.value=f;o.connect(g);g.connect(a.destination);g.gain.setValueAtTime(.3,t+i*.18);g.gain.exponentialRampToValueAtTime(.001,t+i*.18+.45);o.start(t+i*.18);o.stop(t+i*.18+.45)})}catch{}}
+/* ADMIN */
+function admin(){const d=new Date().toDateString(),td=S.o.filter(o=>new Date(o.ts).toDateString()===d);
+ return `<h2>Today</h2><div class="stats"><div class="card"><b>${td.length}</b><span class="mu sm">Orders</span></div><div class="card"><b>₹${td.filter(o=>o.st==='Picked Up').reduce((a,o)=>a+o.total,0)}</b><span class="mu sm">Collected</span></div><div class="card"><b>${td.filter(open).length}</b><span class="mu sm">Pending</span></div></div>
+ <h3>Products</h3>${S.p.map(p=>`<div class="card row"><span>${p.e} ${p.n}</span><span class="row2" style="margin:0"><input class="pi" type="number" min="0" value="${p.pr}" aria-label="Price of ${p.n}" onchange="setp(${p.id},this.value)"><button class="btn sm ${p.on?'':'ghost'}" onclick="tog(${p.id})">${p.on?'Available':'Sold out'}</button></span></div>`).join('')}
+ <button class="btn ghost" onclick="reset()">Reset demo data</button>`}
+function setp(i,v){load();P(i).pr=Math.max(0,+v||0);save()}
+function tog(i){load();P(i).on=P(i).on?0:1;save();R()}
+function reset(){S=JSON.parse(JSON.stringify(seed));save();cart={};try{localStorage.removeItem('pq_mine')}catch(e){}R()}
 
-/* ===== Shared order views ===== */
-const tracker=o=>`<ol class="flex justify-between my-3 text-center text-xs gap-1">${ST.map((s,i)=>`<li class="flex-1"><div class="mx-auto mb-1 w-6 h-6 rounded-full grid place-items-center ${i<=o.st?'bg-[#0F5132] text-white':'bg-slate-200'}">${i<=o.st?'✓':''}</div>${s}</li>`).join('')}</ol>`;
-const lines=(o,c)=>o.items.filter(i=>i.c==c).map(i=>`<li class="flex gap-2"><input type="checkbox" class="mt-1">${i.q}× ${esc(i.n)}</li>`).join('');
-const orderCard=o=>o?`<div class="card mb-3 ${o.st==3?'opacity-60':''}"><div class="flex items-center gap-2"><b class="text-2xl tracking-widest">${o.pin}</b><span>${esc(o.name)}</span><span class="ml-auto text-sm">${esc(o.arr)} · ₹${o.amt}</span></div>
-<div class="text-sm my-1"><span class="px-2 rounded ${o.paid?'bg-green-100 text-green-800':'bg-amber-100 text-amber-800'}">${o.paid?'Paid':o.pay=='online'?'Online – verify payment':'Pay at counter'}</span> <span class="px-2 rounded bg-slate-100">${ST[o.st]}</span></div>
-${['ff','sp'].map(c=>lines(o,c)?`<h4 class="font-semibold mt-2">${c=='ff'?'Kitchen prep':'Store shelf packing'}</h4><ul class="text-sm">${lines(o,c)}</ul>`:'').join('')}
-${o.st<3?`<div class="flex gap-2 mt-3">${o.paid?'':`<button class="btn2" onclick="paid('${o.id}')">Mark paid</button>`}<button class="btn flex-1" onclick="adv('${o.id}')">${['Start preparing','Mark ready','Hand over'][o.st]}</button></div>`:''}</div>`:'';
-
-/* ===== Customer panel ===== */
-function userView(){const c=cfg(),list=Object.values(S.products).filter(p=>(tab=='all'||p.c==tab)&&p.n.toLowerCase().includes(q.toLowerCase())),n=Object.values(cart).reduce((a,b)=>a+b,0),ao=mine().find(o=>o.st<3);
- return `<header class="sticky top-0 z-10 bg-[#0F5132] text-white p-3 flex items-center gap-3"><div class="font-extrabold text-xl select-none" onclick="tap()">${esc(c.name)}</div><button class="btn2 !bg-transparent !text-white !border-white/40 ml-auto text-sm" onclick="drawer='mine';render()">My passes</button></header>
-<main class="p-3 max-w-3xl mx-auto pb-28">${ao?`<button class="w-full text-left card mb-3 !border-2 !border-[#F5A524]" onclick="drawer='pass:${ao.id}';render()"><b>Order ${ao.pin}</b> · ${ST[ao.st]}<br><span class="text-sm text-slate-500">Tap to show your pass</span></button>`:''}
-<input id="q" class="in mb-3" placeholder="Search kitchen menu and shelves" value="${esc(q)}" oninput="q=this.value;render()">
-<div class="flex gap-2 mb-3 overflow-x-auto">${[['all','All'],['ff','Fast food'],['sp','Store products']].map(([k,l])=>`<button class="btn2 whitespace-nowrap ${tab==k?'!bg-[#F5A524] !border-[#F5A524]':''}" onclick="tab='${k}';render()">${l}</button>`).join('')}</div>
-<div class="grid grid-cols-2 sm:grid-cols-3 gap-3">${list.map(p=>`<div class="card ${p.ok?'':'opacity-50'}"><div class="text-4xl">${esc(p.e)}</div><div class="font-semibold leading-tight mt-1">${esc(p.n)}</div><div class="text-xs text-slate-500">${p.c=='ff'?'Made fresh in the kitchen':'Packed from the shelf'}</div><div class="flex items-center mt-2"><b class="flex-1">₹${p.p}</b>${!p.ok?'<span class="text-xs font-bold text-red-600">Sold out</span>':cart[p.id]?`<button class="btn2" onclick="add('${p.id}',-1)">−</button><b class="px-2">${cart[p.id]}</b><button class="btn2" onclick="add('${p.id}',1)">+</button>`:`<button class="btn !py-1.5" onclick="add('${p.id}',1)">Add</button>`}</div></div>`).join('')||'<p class="col-span-full text-slate-500">Nothing matches. Try another word.</p>'}</div>
-<p class="text-center text-xs text-slate-400 mt-8"><a href="?panel=admin">Store Staff Login</a></p></main>
-${n?`<button class="btn fixed bottom-3 inset-x-3 py-4 flex justify-between z-10" onclick="drawer='cart';render()"><span><i data-lucide="shopping-bag" class="inline w-5 h-5"></i> ${n} items</span><span>View order · ₹${cartTotal()}</span></button>`:''}${drawerView()}`}
-function tap(){taps=taps.filter(t=>Date.now()-t<800);taps.push(Date.now());if(taps.length>=3)location.search='?panel=admin'}
-function add(id,d){cart[id]=Math.min(20,Math.max(0,(cart[id]||0)+d));if(!cart[id])delete cart[id];if(!Object.keys(cart).length&&drawer=='cart')drawer='';render()}
-function drawerView(){if(!drawer)return'';let h='';
- if(drawer=='cart')h=`<h2 class="font-extrabold text-lg mb-2">Your order</h2>${Object.entries(cart).map(([id,n])=>{const p=S.products[id];return p?`<div class="flex items-center gap-2 py-1"><span class="flex-1">${esc(p.n)}</span><button class="btn2" onclick="add('${id}',-1)">−</button><b>${n}</b><button class="btn2" onclick="add('${id}',1)">+</button><span class="w-16 text-right">₹${p.p*n}</span></div>`:''}).join('')}
-<input id="nm" class="in my-3" placeholder="Your name" maxlength="40" value="${esc(co.name)}" onchange="co.name=this.value">
-<p class="font-semibold">When will you arrive?</p><div class="flex gap-2 my-2 flex-wrap">${['Arriving now','In 15 mins','In 30 mins'].map(a=>`<button class="btn2 ${co.arr==a?'!bg-[#F5A524]':''}" onclick="co.arr='${a}';render()">${a}</button>`).join('')}</div>
-<p class="font-semibold">Payment</p><div class="flex gap-2 my-2">${[['online','Pay online (UPI)'],['counter','Pay at counter']].map(([k,l])=>`<button class="btn2 ${co.pay==k?'!bg-[#F5A524]':''}" onclick="co.pay='${k}';render()">${l}</button>`).join('')}</div>
-<button class="btn w-full mt-2" onclick="place()">Place order · ₹${cartTotal()}</button>`;
- else if(drawer=='mine')h=`<h2 class="font-extrabold text-lg mb-2">My passes</h2>${mine().map(o=>`<button class="card w-full text-left mb-2" onclick="drawer='pass:${o.id}';render()"><b>${o.pin}</b> · ₹${o.amt} · ${ST[o.st]}</button>`).join('')||'<p class="text-slate-500">No passes on this device yet. Place an order to get one.</p>'}`;
- else{const o=S.orders[drawer.slice(5)],c=cfg();h=!o?'<p>Pass not found.</p>':`<div class="text-center"><p class="text-sm text-slate-500">${esc(c.name)} pickup pass</p><div id="qr" class="inline-block p-2 border rounded-lg my-2" data-q="${esc(JSON.stringify({v:1,id:o.id,pin:o.pin,amt:o.amt,pay:o.pay,sig:o.sig}))}"></div><p class="text-xs text-slate-500">Pickup PIN</p><p class="text-4xl font-extrabold tracking-[.3em]">${o.pin}</p><p class="text-sm">${esc(o.arr)} · ₹${o.amt} · ${o.paid?'Paid':o.pay=='online'?'Payment pending':'Pay at counter'}</p></div>${tracker(o)}
-${['ff','sp'].map(k=>{const l=o.items.filter(i=>i.c==k);return l.length?`<h4 class="font-semibold mt-2">${k=='ff'?'[KITCHEN]':'[STORE]'}</h4><ul class="text-sm">${l.map(i=>`<li>${i.q}× ${esc(i.n)} <span class="float-right">₹${i.p*i.q}</span></li>`).join('')}</ul>`:''}).join('')}
-${o.pay=='online'&&!o.paid&&c.upi?`<a class="btn block text-center mt-3" href="upi://pay?pa=${encodeURIComponent(c.upi)}&pn=${encodeURIComponent(c.name)}&am=${o.amt}&cu=INR&tn=${o.id}">Pay ₹${o.amt} in your UPI app</a><div id="upiqr" class="mt-2 flex justify-center" data-q="${esc(`upi://pay?pa=${encodeURIComponent(c.upi)}&pn=${encodeURIComponent(c.name)}&am=${o.amt}&cu=INR&tn=${o.id}`)}"></div>`:o.pay=='online'&&!o.paid?'<p class="text-sm text-amber-700 mt-2">Store UPI is not set up yet. Pay at the counter.</p>':''}`}
- return `<div class="fixed inset-0 z-20 bg-black/50 flex items-end sm:items-center justify-center" onclick="if(event.target==this){drawer='';render()}"><div class="bg-white w-full max-w-md max-h-[90vh] overflow-auto rounded-t-2xl sm:rounded-2xl p-4">${h}<button class="btn2 w-full mt-3" onclick="drawer='';render()">Close</button></div></div>`}
-async function place(){co.name=$('#nm')?.value??co.name;const m=JSON.parse(localStorage.pos_mine||'[]');
- if(Date.now()-(+localStorage.pos_last||0)<2e4)return toast('Please wait 20 seconds between orders.');
- if(m.map(i=>S.orders[i]).filter(o=>o&&o.st<3).length>=3)return toast('You already have 3 active orders. Collect one first.');
- const items=Object.entries(cart).map(([id,n])=>{const p=S.products[id];return p&&p.ok?{id,n:p.n,p:p.p,c:p.c,q:n}:null}).filter(Boolean); // prices always from catalog
- if(!items.length)return toast('Those items are no longer available.');
- const amt=items.reduce((a,i)=>a+i.p*i.q,0),id='o'+rnd(4).toUpperCase(),c=cfg();let pin;
- do pin=String(1000+crypto.getRandomValues(new Uint32Array(1))[0]%9000);while(Object.values(S.orders).some(x=>x.pin==pin&&x.st<3));
- const o={id,dev,name:co.name.trim().slice(0,40)||'Guest',items,amt,pay:co.pay,paid:0,arr:co.arr,st:0,pin,t:Date.now(),sig:await hmac(c.hkey||'x',`${id}|${pin}|${amt}|${co.pay}`)};
- put('orders',o);m.push(id);localStorage.pos_mine=JSON.stringify(m);localStorage.pos_last=Date.now();cart={};drawer='pass:'+id;render()}
-
-/* ===== Admin panel ===== */
-const lockLeft=()=>Math.max(0,Math.ceil(((+localStorage.pos_lock||0)-Date.now())/1e3));
-function loginView(){const c=cfg(),lk=lockLeft(),setup=!c.hash;
- return `<div class="min-h-screen grid place-items-center bg-[#0F5132] p-4"><div class="bg-white rounded-2xl p-6 w-full max-w-xs text-center"><h1 class="font-extrabold text-xl">${setup?(p1?'Confirm your PIN':'Create a 6-digit admin PIN'):'Enter admin PIN'}</h1>
-<div class="flex justify-center gap-2 my-4">${[0,1,2,3,4,5].map(i=>`<i class="w-3.5 h-3.5 rounded-full ${i<ent.length?'bg-[#0F5132]':'bg-slate-200'}"></i>`).join('')}</div>
-<p class="text-sm text-red-600 min-h-5">${lk?`Too many attempts. Try again in ${lk}s.`:esc(msg)}</p>
-<div class="grid grid-cols-3 gap-2 mt-2">${[1,2,3,4,5,6,7,8,9,'C',0,'⌫'].map(k=>`<button class="btn2 py-3 text-lg" ${lk?'disabled':''} onclick="key('${k}')">${k}</button>`).join('')}</div><a href="?panel=user" class="block mt-4 text-xs text-slate-400">Back to storefront</a></div></div>`}
-async function key(k){if(lockLeft())return;if(k=='⌫')ent=ent.slice(0,-1);else if(k=='C')ent='';else if(ent.length<6)ent+=k;msg='';
- if(ent.length==6){const c=cfg(),e=ent;ent='';
-  if(!c.hash){if(!p1){if(strong(e))p1=e;else msg='Too easy to guess. Avoid repeats and sequences.'}else if(p1!=e){msg='PINs did not match. Start again.';p1=''}else{const salt=rnd(16);put('settings',{...c,id:'main',salt,hash:await sha(salt+e)});p1='';log('Admin PIN created');return unlock()}}
-  else if(await sha(c.salt+e)==c.hash){localStorage.pos_fails=0;log('Admin login');return unlock()}
-  else{const f=(+localStorage.pos_fails||0)+1;localStorage.pos_fails=f;msg='Wrong PIN.';log('Failed login attempt '+f);if(f>=5){localStorage.pos_lock=Date.now()+6e4;localStorage.pos_fails=0;log('Keypad locked for 60s')}}}
- render()}
-function unlock(){un=true;last=Date.now();Object.keys(S.orders).forEach(i=>seen.add(i));seenInit=true;render()}
-function lock(why){un=false;ent='';scn&&stopScan();log('Admin locked ('+why+')');render()}
-const go=async k=>{if(scn)await stopScan();at=k;render()},paid=id=>{put('orders',{...S.orders[id],paid:1});log('Payment collected '+id)};
-function adv(id){const o=S.orders[id];if(o.st==2&&!o.paid)return toast('Collect payment before handover.');put('orders',{...o,st:o.st+1});if(o.st==2)log('Handed over '+id)}
-async function startScan(){try{scn=new Html5Qrcode('reader');$('#reader').classList.remove('hidden');await scn.start({facingMode:'environment'},{fps:10,qrbox:220},async t=>{if(busy)return;busy=1;await stopScan();await check(t);busy=0},()=>{});render()}catch(e){scn=null;scanMsg='Camera unavailable or blocked. Allow camera access in browser settings, or use PIN lookup.';render()}}
-async function stopScan(){try{await scn?.stop()}catch{}scn=null;render()}
-async function check(txt){let r;try{const d=JSON.parse(txt),o=S.orders[d.id],c=cfg();
- if(!o||d.v!==1)r={ok:0,m:'Unknown pass. No matching order.'};
- else if(d.sig!==await hmac(c.hkey||'x',`${d.id}|${d.pin}|${d.amt}|${d.pay}`)||d.sig!==o.sig||d.pin!==o.pin||d.amt!==o.amt||d.pay!==o.pay){r={ok:0,m:'TAMPERED QR. Signature does not match this order.'};log('Tampered QR scanned for '+d.id)}
- else if(o.st==3){r={ok:0,m:'Already handed over. Duplicate scan blocked.',id:o.id};log('Replay blocked '+o.id)}
- else r={ok:1,m:'Valid pass. Signature verified.',id:o.id}}catch{r={ok:0,m:'Not a Counter Pass QR code.'}}
- scanRes=r;scanMsg='';render()}
-function byPin(){const p=$('#pin').value.trim(),o=Object.values(S.orders).filter(x=>x.pin==p).sort((a,b)=>(a.st==3)-(b.st==3)||b.t-a.t)[0];scanRes=!o?{ok:0,m:'No order with that PIN.'}:o.st==3?{ok:0,m:'Already handed over.',id:o.id}:{ok:1,m:'Order found.',id:o.id};render()}
-function saveP(){const n=$('#pn').value.trim().slice(0,50),p=Math.round(+$('#pp').value*100)/100;if(!n||!(p>0&&p<=1e5))return toast('Enter a name and a price between 1 and 100000.');
- const o=S.products[edit]||{id:'p'+rnd(3),ok:1};put('products',{...o,n,p,c:$('#pc').value,e:$('#pe').value.trim()||'🛒'});log((edit?'Edited ':'Added ')+n);edit=''}
-const stock=id=>put('products',{...S.products[id],ok:S.products[id].ok?0:1}),delP=id=>{if(confirm('Delete this item?')){del('products',id);log('Deleted item '+id)}};
-const saveS=()=>{put('settings',{...cfg(),id:'main',name:$('#sn').value.trim().slice(0,40)||'Store',upi:$('#su').value.trim().slice(0,60)});log('Store settings saved');toast('Saved')};
-const setLock=m=>{put('settings',{...cfg(),id:'main',lock:+m});log('Auto-lock set to '+m+' min')};
-async function chPin(){const c=cfg(),o=$('#op').value,n=$('#np').value;if(await sha(c.salt+o)!=c.hash)return toast('Current PIN is wrong.');if(!strong(n))return toast('Use 6 digits, no repeats or sequences like 123456.');if(n!=$('#cp').value)return toast('New PINs do not match.');
- const salt=rnd(16);put('settings',{...c,id:'main',salt,hash:await sha(salt+n)});log('Admin PIN rotated');toast('PIN updated')}
-function poster(){const c=cfg();$('#poster').innerHTML=`<div style="text-align:center;font-family:sans-serif;padding:40px"><h1 style="font-size:44px;margin:0">${esc(c.name)}</h1><p style="font-size:24px">Order ahead. Skip the queue.</p><div id="pq" style="display:inline-block;margin:24px"></div><p style="font-size:20px">Scan with your phone camera, order, then show your pass at the counter.</p></div>`;new QRCode($('#pq'),{text:location.origin+location.pathname+'?panel=user',width:320,height:320});setTimeout(()=>print(),300)}
-function adminView(){if(!un)return loginView();const tabs=[['orders','Orders'],['scan','Scanner'],['menu','Menu'],['store','Store & QR'],['sec','Security']],os=Object.values(S.orders).sort((a,b)=>(a.st==3)-(b.st==3)||b.t-a.t),c=cfg();let h='';
- if(at=='orders')h=os.map(orderCard).join('')||'<p class="text-slate-500">No orders yet. New ones appear here with a chime.</p>';
- if(at=='scan')h=`<div id="reader" class="w-full max-w-sm mx-auto ${scn?'':'hidden'}"></div>${scanMsg?`<p class="text-red-600 my-2">${esc(scanMsg)}</p>`:''}<button class="btn w-full my-2" onclick="${scn?'stopScan()':'startScan()'}">${scn?'Stop camera':'Scan customer QR'}</button><div class="flex gap-2 my-2"><input id="pin" class="in" inputmode="numeric" maxlength="4" placeholder="4-digit pickup PIN"><button class="btn" onclick="byPin()">Find</button></div>${scanRes?`<div class="p-3 rounded-lg my-2 text-white font-semibold ${scanRes.ok?'bg-green-700':'bg-red-600'}">${esc(scanRes.m)}</div>${orderCard(S.orders[scanRes.id])}`:''}`;
- if(at=='menu'){const e=S.products[edit]||{};h=`<div class="card mb-3 grid grid-cols-2 gap-2"><input id="pn" class="in col-span-2" placeholder="Item name" maxlength="50" value="${esc(e.n)}"><input id="pp" class="in" type="number" min="1" placeholder="Price ₹" value="${e.p??''}"><select id="pc" class="in"><option value="ff" ${e.c=='ff'?'selected':''}>Fast food</option><option value="sp" ${e.c=='sp'?'selected':''}>Store product</option></select><input id="pe" class="in" maxlength="4" placeholder="Emoji" value="${esc(e.e||'')}"><button class="btn" onclick="saveP()">${edit?'Save changes':'Add item'}</button></div>`+Object.values(S.products).map(p=>`<div class="card mb-2 flex items-center gap-2"><span class="text-2xl">${esc(p.e)}</span><div class="flex-1"><b>${esc(p.n)}</b><div class="text-sm text-slate-500">${p.c=='ff'?'Fast food':'Store product'} · ₹${p.p}</div></div><button class="btn2 ${p.ok?'':'!bg-red-100'}" onclick="stock('${p.id}')">${p.ok?'In stock':'Sold out'}</button><button class="btn2" onclick="edit='${p.id}';render()">Edit</button><button class="btn2" onclick="delP('${p.id}')">Delete</button></div>`).join('')}
- if(at=='store'){const b=location.origin+location.pathname;h=`<div class="card grid gap-2"><input id="sn" class="in" maxlength="40" value="${esc(c.name)}" placeholder="Store name"><input id="su" class="in" maxlength="60" value="${esc(c.upi)}" placeholder="Store UPI ID (name@bank)"><button class="btn" onclick="saveS()">Save settings</button></div>${[['Customer link',b+'?panel=user'],['Admin link',b+'?panel=admin']].map(([l,u])=>`<div class="card mt-2"><b>${l}</b><div class="text-sm break-all">${esc(u)}</div><button class="btn2 mt-1" data-u="${esc(u)}" onclick="navigator.clipboard.writeText(this.dataset.u).then(()=>toast('Link copied'))">Copy link</button></div>`).join('')}<button class="btn w-full mt-3" onclick="poster()">Print entrance QR poster</button>`}
- if(at=='sec'){const au=Object.values(S.audit).sort((a,b)=>b.t-a.t).slice(0,50);h=`<div class="card grid gap-2"><b>Change admin PIN</b>${[['op','Current PIN'],['np','New 6-digit PIN'],['cp','Repeat new PIN']].map(([i,p])=>`<input id="${i}" class="in" type="password" inputmode="numeric" maxlength="6" placeholder="${p}">`).join('')}<button class="btn" onclick="chPin()">Update PIN</button></div><div class="card mt-2 flex items-center gap-2"><span class="flex-1">Auto-lock after</span><select class="in !w-auto" onchange="setLock(this.value)">${[5,15,30].map(m=>`<option value="${m}" ${c.lock==m?'selected':''}>${m} min</option>`).join('')}</select></div><div class="card mt-2"><b>Security log</b> <span class="text-xs text-slate-500">(append-only, hash-chained)</span>${au.map(a=>`<div class="text-xs py-1 border-b"><span class="text-slate-500">${new Date(a.t).toLocaleString()}</span> ${esc(a.ev)} <code class="text-slate-400">${a.h.slice(0,8)}</code></div>`).join('')}</div>`}
- return `<header class="sticky top-0 z-10 bg-[#0F5132] text-white p-3 flex items-center gap-2"><b class="flex-1">${esc(c.name)} POS</b><button class="btn2 !bg-transparent !text-white" onclick="lock('manual')"><i data-lucide="lock" class="inline w-4 h-4"></i> Lock POS</button></header><nav class="flex overflow-x-auto gap-2 p-2 bg-white border-b">${tabs.map(([k,l])=>`<button class="btn2 whitespace-nowrap ${at==k?'!bg-[#F5A524]':''}" onclick="go('${k}')">${l}</button>`).join('')}</nav><main class="p-3 max-w-3xl mx-auto">${h}</main>`}
-
-/* ===== Render / sync / boot ===== */
-function render(){const a=document.activeElement,id=a&&a.id,pos=a&&a.selectionStart;$('#app').innerHTML=panel=='admin'?adminView():userView();window.lucide&&lucide.createIcons();
- if(id){const e=$('#'+id);if(e){e.focus();try{e.setSelectionRange(pos,pos)}catch{}}}
- ['qr','upiqr'].forEach(i=>{const e=$('#'+i);if(e)new QRCode(e,{text:e.dataset.q,width:i=='qr'?176:140,height:i=='qr'?176:140})})}
-function sync(){if(panel=='admin'&&un){const ids=Object.keys(S.orders);if(seenInit&&ids.some(i=>!seen.has(i)))chime();ids.forEach(i=>seen.add(i))}
- const a=document.activeElement;if(scn||(a&&/INPUT|SELECT/.test(a.tagName)&&a.id!='q'))return;render()}
-['click','keydown','touchstart'].forEach(e=>addEventListener(e,()=>last=Date.now()));
-setInterval(()=>{if(panel!='admin')return;if(un&&Date.now()-last>cfg().lock*6e4)lock('inactivity');else{const l=lockLeft();if(!un&&(l||wl))render();wl=l}},1000);
-if('serviceWorker'in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('sw.js').catch(()=>{});
-(async()=>{await initDB();subs.push(sync);if(fb)await new Promise(r=>setTimeout(r,1500));seed();render()})();
-</script></body></html>
+const live=()=>{if(view==='cust'&&page==='order')R();else if(view==='staff'&&staffIn&&$('#q'))$('#q').innerHTML=queue()};
+setInterval(live,2500);addEventListener('storage',live);R();
+</script>
+</body>
+</html>
